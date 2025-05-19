@@ -1,4 +1,4 @@
-#define _WIN32_WINNT 0x0400
+#define _WIN32_WINNT 0x0100
 #include <windows.h>
 
 #include "debug.h"
@@ -108,7 +108,7 @@ DWORD WINAPI CORADV32_GetSecurityInfo( HANDLE param_0,  SE_OBJECT_TYPE param_1, 
   return 0;
 }
 
-BOOL WINAPI CORADV32_CryptAcquireContextW (HCRYPTPROV * param_0,  LPCWSTR param_1,  LPCWSTR param_2,  DWORD param_3,  DWORD param_4)
+BOOL WINAPI CORADV32_CryptAcquireContextW (HANDLE *param_0,  LPCWSTR param_1,  LPCWSTR param_2,  DWORD param_3,  DWORD param_4)
 {
   Trace(TRACE_UNIMPLEMENTED, "CryptAcquireContextW");
   // TODO: Stub

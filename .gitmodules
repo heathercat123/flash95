@@ -1,0 +1,3 @@
+[submodule "winsock351"]
+	path = winsock351
+	url = https://github.com/heathercat123/winsock351.git

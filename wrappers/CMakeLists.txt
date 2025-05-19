@@ -20,11 +20,39 @@ add_library(corkel32 SHARED
 # NTDLL => CORNT
 add_library(cornt SHARED
   ntdll.c
+  mscms.c
   cornt.def
 )
 
 # USER32 => CORUSR
 add_library(corusr SHARED
   user32.c
+  urlmon.c
   corusr.def
 )
+
+# CRYPT32 => CRYPT32
+add_library(crypt32 SHARED
+  crypt32.c
+  crypt32.def
+)
+
+# SHELL32 => CORSHEL
+add_library(corshel SHARED
+  shell32.c
+  corshel.def
+)
+
+## For VPC 5.1
+## IPHLPAPI => IPHLPAPI
+#add_library(iphlpapi SHARED
+#  iphlpapi.c
+#  iphlpapi.def
+#)
+
+## Currently unused
+## ws2_32 => ws2_32
+#add_library(ws2_32 SHARED
+#  ws2_32.c
+#  ws2_32.def
+#)

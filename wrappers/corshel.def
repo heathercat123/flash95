@@ -1,0 +1,10 @@
+LIBRARY
+EXPORTS
+
+SHGetSpecialFolderLocation=CORSHEL_SHGetSpecialFolderLocation
+SHBrowseForFolderA=CORSHEL_SHBrowseForFolderA
+SHGetPathFromIDListA=CORSHEL_SHGetPathFromIDListA
+SHAppBarMessage=CORSHEL_SHAppBarMessage
+DragQueryFileA=CORSHEL_DragQueryFileA
+DragQueryFileW=CORSHEL_DragQueryFileW
+DragAcceptFiles=CORSHEL_DragAcceptFiles

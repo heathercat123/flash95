@@ -1,4 +1,4 @@
-#define _WIN32_WINNT 0x0400
+#define _WIN32_WINNT 0x0100
 
 #include <stdio.h>
 #include <windows.h>
@@ -158,6 +158,15 @@ LONG WINAPI CORKEL32_InterlockedCompareExchange(LONG *dest,  LONG xchg,  LONG co
 {
   LONG temp = *dest;
 
+  // Passthrough if already implemented due to issues on 98 and NT
+  // wait this doesn't even work, I guess you just have to passthrough in corkel32.def then
+  typedef LONG (WINAPI *InterlockedCompareExchange_t)(LONG, LONG, LONG);
+  InterlockedCompareExchange_t interlockedCompareExchange = (InterlockedCompareExchange_t) GetProcAddress(GetModuleHandleA("KERNEL32.DLL"), "InterlockedCompareExchange");
+  
+  if (interlockedCompareExchange) {
+    return interlockedCompareExchange(dest, xchg, compare);
+  }
+  
   Trace(TRACE_FORCE_DONT_PRINT, "InterlockedCompareExchange");
 
   if (compare == *dest) {
@@ -184,12 +193,19 @@ BOOL WINAPI CORKEL32_GetFileAttributesExA(LPCSTR name, GET_FILEEX_INFO_LEVELS le
 {
   WIN32_FILE_ATTRIBUTE_DATA *data;
   HANDLE hFile;
+  // wchar_t err[256]; // for debugging
+  // memset(err, 0, 256); // for debugging
 
   Trace(TRACE_IMPLEMENTED, "GetFileAttributesExA - %s", name);
-
+  
+  // FILE_FLAG_BACKUP_SEMANTICS doesn't exist on 9x but is required to get an handle to directories, including SharedObjects
+  // TODO: Find a way to get directory handles on 9x
+  hFile = CreateFileA(name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
   data = ptr;
-  hFile = CreateFileA(name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-  if (hFile == INVALID_HANDLE_VALUE) {
+   if (hFile == INVALID_HANDLE_VALUE) {
+    // FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 255, NULL);
+    // Trace(TRACE_DISABLE, "GetFileAttributesExA FindFirstFileA err - %1s", err);
+    // Trace(TRACE_DISABLE, "GetFileAttributesExA FindFirstFileA name - %1s", name);
     return FALSE;
   }
 
@@ -206,12 +222,17 @@ BOOL WINAPI CORKEL32_GetFileAttributesExW(LPCWSTR name, GET_FILEEX_INFO_LEVELS l
 {
   WIN32_FILE_ATTRIBUTE_DATA *data;
   HANDLE hFile;
+  // wchar_t err[256]; // for debugging
+  // memset(err, 0, 256); // for debugging
 
-  Trace(TRACE_IMPLEMENTED, "GetFileAttributesExW - %ls", name);
+  // Trace(TRACE_DISABLE, "GetFileAttributesExW - %ls", name);
 
   data = ptr;
-  hFile = CreateFileW(name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+  hFile = CreateFileW(name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
   if (hFile == INVALID_HANDLE_VALUE) {
+	// FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 255, NULL);
+	// Trace(TRACE_DISABLE, "GetFileAttributesExW CreateFileW err - %1s", err);
+	// Trace(TRACE_DISABLE, "GetFileAttributesExW CreateFileW name - %1s", name);
     return FALSE;
   }
 
@@ -302,4 +323,121 @@ BOOL WINAPI CORKEL32_InitializeCriticalSectionAndSpinCount(LPCRITICAL_SECTION cr
   //crit->Reserved = count & ~0x80000000;
 
   return TRUE;
+}
+
+// VOID pointer should be PTIMERAPCROUTINE
+BOOL WINAPI CORKEL32_SetWaitableTimer(HANDLE hTimer, const LARGE_INTEGER *lpDueTime, LONG lPeriod, VOID *pfnCompletionRoutine, LPVOID lpArgToCompletionRoutine, BOOL fResume)
+{
+  // TODO: Stub
+  Trace(TRACE_UNIMPLEMENTED, "SetWaitableTimer");
+  return FALSE;
+}
+
+HANDLE WINAPI CORKEL32_CreateWaitableTimerA(LPSECURITY_ATTRIBUTES lpTimerAttributes, BOOL bManualReset, LPCWSTR lpTimerName)
+{
+  // TODO: Stub
+  Trace(TRACE_UNIMPLEMENTED, "CreateWaitableTimerA");
+  return NULL;
+}
+
+void WINAPI CORKEL32_GetSystemTimeAsFileTime(LPFILETIME lpSystemTimeAsFileTime)
+{
+  // Only Windows 95 lacks this function so if we have it, we passthrough.
+  // Otherwise, just throw an error.
+
+  typedef void (WINAPI *GetSystemTimeAsFileTime_t)(LPFILETIME);
+  GetSystemTimeAsFileTime_t getSystemTimeAsFileTime = (GetSystemTimeAsFileTime_t) GetProcAddress(GetModuleHandleA("KERNEL32.DLL"), "GetSystemTimeAsFileTime");
+
+  if (getSystemTimeAsFileTime) {
+	Trace(TRACE_IMPLEMENTED, "GetSystemTimeAsFileTime");
+    getSystemTimeAsFileTime(lpSystemTimeAsFileTime);
+  } else {
+	Trace(TRACE_UNIMPLEMENTED, "GetSystemTimeAsFileTime");
+  }
+}
+
+BOOL WINAPI CORKEL32_SetFilePointerEx(HANDLE hFile, LARGE_INTEGER liDistanceToMove, PLARGE_INTEGER lpNewFilePointer, DWORD dwMoveMethod)
+{
+	// Shamelessly stolen from KernelEx
+	DWORD lasterr = GetLastError();
+	Trace(TRACE_UNIMPLEMENTED, "SetFilePointerEx");
+	if ((liDistanceToMove.LowPart = SetFilePointer(hFile, liDistanceToMove.LowPart, &liDistanceToMove.HighPart, dwMoveMethod)) == 0xFFFFFFFF && GetLastError() != NO_ERROR)
+	{
+		SetLastError(ERROR_INVALID_PARAMETER);
+		return FALSE;
+	}
+	if (lpNewFilePointer) *lpNewFilePointer = liDistanceToMove;
+	SetLastError(lasterr);
+	return TRUE;
+}
+
+BOOL WINAPI CORKEL32_GetFileSizeEx(HANDLE hFile, PLARGE_INTEGER lpFileSize)
+{
+	// Shamelessly stolen from KernelEx
+	DWORD h, l, lasterr;
+	Trace(TRACE_UNIMPLEMENTED, "GetFileSizeEx");
+	lasterr = GetLastError();
+	l = GetFileSize(hFile, &h);
+	if (l == INVALID_FILE_SIZE && GetLastError() != NO_ERROR)
+	{
+		return FALSE;
+	} else  {
+		lpFileSize->HighPart = h;
+		lpFileSize->LowPart = l;
+	}
+	SetLastError(lasterr);
+	return TRUE;
+}
+
+// For VPC 4.1
+BOOL WINAPI CORKEL32_CancelIo(HANDLE hFile)
+{
+  Trace(TRACE_UNIMPLEMENTED, "CancelIo");
+  return FALSE;
+}
+
+// For VPC
+LONG WINAPI CORKEL32_InterlockedExchangeAdd(LONG *Addend, LONG Value)
+{
+  Trace(TRACE_IMPLEMENTED, "InterlockedExchangeAdd");
+  Addend = Addend + Value;
+  return *Addend;
+}
+
+DWORD WINAPI CORKEL32_GetVersion()
+{
+  Trace(TRACE_IMPLEMENTED, "GetVersion");
+  // Lie about being on Windows ME (last 9x-based windows version)
+  return (DWORD)( (1    << 30)  | // Platform ID (1 = 9x, 2 = NT)
+                  (3000 << 16)  | // Build number (300 is Windows ME RTM)
+                  (90   << 8)   | // Minor version (Windows ME is 4.90, so minor version = 90)
+                   4);            // Major version (4 for 95, 98, ME and NT 4)
+}
+
+BOOL WINAPI CORKEL32_GetVersionExA(LPOSVERSIONINFOA lpVersionInfo)
+{
+  Trace(TRACE_IMPLEMENTED, "GetVersionExA");
+  lpVersionInfo->dwOSVersionInfoSize   = sizeof(OSVERSIONINFOEXA);
+
+  // ME's version number is 4.90.3000
+  lpVersionInfo->dwMajorVersion   = (DWORD)4;
+  lpVersionInfo->dwMinorVersion   = (DWORD)90;
+  lpVersionInfo->dwBuildNumber    = (DWORD)3000;
+
+  // 1 is 9x, 2 is NT
+  lpVersionInfo->dwPlatformId     = (DWORD)1;
+
+  return TRUE;
+}
+
+
+HMODULE WINAPI CORKEL32_GetModuleHandleW(LPCWSTR lpModuleName)
+{
+  Trace(TRACE_UNIMPLEMENTED, "GetModuleHandleW - %s", lpModuleName);
+
+  // We assume that it's asking for KERNEL32.DLL.
+  // This should be enough since the only non-KERNEL32
+  // module which Flash 10 tries to get the handle
+  // for is "mscoree.dll" when closing.
+  return GetModuleHandleA((LPCSTR)"KERNEL32.DLL");
 }

@@ -3,3 +3,9 @@ EXPORTS
   RtlNtStatusToDosError=CORNT_RtlNtStatusToDosError
   RtlUnwind=CORNT_RtlUnwind
   IoUnregisterDeviceInterface=CORNT_IoUnregisterDeviceInterface
+
+  DeleteColorTransform=CORMS_DeleteColorTransform
+  OpenColorProfileA=CORMS_OpenColorProfileA
+  CloseColorProfile=CORMS_CloseColorProfile
+  CreateColorTransformW=CORMS_CreateColorTransformW
+  TranslateBitmapBits=CORMS_TranslateBitmapBits

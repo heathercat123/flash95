@@ -1,3 +1,9 @@
-dotnet95.exe
-dotnet9x.exe
+build/
 wrappers/build/
+msvc420/
+msvc600/
+flashbin/
+winsock351/Debug/
+build.img
+build.iso
+patches/original.exe

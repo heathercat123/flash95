@@ -1,0 +1,4 @@
+LIBRARY
+EXPORTS
+  GetAdaptersInfo=IPHLPAPI_GetAdaptersInfo
+  GetNetworkParams=IPHLPAPI_GetNetworkParams

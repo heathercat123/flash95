@@ -1,5 +1,9 @@
 LIBRARY
 EXPORTS
+  ;; Re-implementation does not work on NT 4.0+ and 98+
+  InterlockedCompareExchange=CORKEL32_InterlockedCompareExchange
+  ;InterlockedCompareExchange=KERNEL32.InterlockedCompareExchange
+
   GetLastError=CORKEL32_GetLastError
   GetProcAddress=CORKEL32_GetProcAddress
   MultiByteToWideChar=CORKEL32_MultiByteToWideChar
@@ -11,7 +15,6 @@ EXPORTS
   LoadLibraryA=CORKEL32_LoadLibraryA
   LoadLibraryW=CORKEL32_LoadLibraryW
   DeviceIoControl=CORKEL32_DeviceIoControl
-  InterlockedCompareExchange=CORKEL32_InterlockedCompareExchange
   CreateToolhelp32Snapshot=CORKEL32_CreateToolhelp32Snapshot
   IsDebuggerPresent=CORKEL32_IsDebuggerPresent
   GetFileAttributesExA=CORKEL32_GetFileAttributesExA
@@ -28,6 +31,20 @@ EXPORTS
   IsProcessorFeaturePresent=CORKEL32_IsProcessorFeaturePresent
   InitializeCriticalSectionAndSpinCount=CORKEL32_InitializeCriticalSectionAndSpinCount
   GetSystemWindowsDirectoryW=CORKEL32_GetSystemWindowsDirectoryW
+  SetWaitableTimer=CORKEL32_SetWaitableTimer
+  CreateWaitableTimerA=CORKEL32_CreateWaitableTimerA
+  GetSystemTimeAsFileTime=CORKEL32_GetSystemTimeAsFileTime
+  SetFilePointerEx=CORKEL32_SetFilePointerEx
+  GetFileSizeEx=CORKEL32_GetFileSizeEx
+  CancelIo=CORKEL32_CancelIo
+  InterlockedExchangeAdd=CORKEL32_InterlockedExchangeAdd
+  GetVersion=CORKEL32_GetVersion
+  GetVersionExA=CORKEL32_GetVersionExA
+  GetModuleHandleW=CORKEL32_GetModuleHandleW ; 9x's Unicode implementation is garbage
+  ;OpenThread=CORKEL32_OpenThread
+  ;VerSetConditionMask=CORKEL32_VerSetConditionMask
+  ;VerifyVersionInfoW=CORKEL32_VerifyVersionInfoW
+  ;GetUserDefaultUILanguage=CORKEL32_GetUserDefaultUILanguage
 
   CryptEnumProvidersA=CORADV32_CryptEnumProvidersA
   SetEntriesInAclW=CORADV32_SetEntriesInAclW
@@ -55,6 +72,7 @@ EXPORTS
   ExitProcess=KERNEL32.ExitProcess
   DisableThreadLibraryCalls=KERNEL32.DisableThreadLibraryCalls
   VirtualProtect=KERNEL32.VirtualProtect
+  VirtualProtectEx=KERNEL32.VirtualProtect
   WriteFile=KERNEL32.WriteFile
   GetLocalTime=KERNEL32.GetLocalTime
   ReadProcessMemory=KERNEL32.ReadProcessMemory
@@ -77,13 +95,10 @@ EXPORTS
   GetACP=KERNEL32.GetACP
   GetCurrentThreadId=KERNEL32.GetCurrentThreadId
   QueryPerformanceCounter=KERNEL32.QueryPerformanceCounter
-  GetSystemTimeAsFileTime=KERNEL32.GetSystemTimeAsFileTime
   lstrlenW=KERNEL32.lstrlenW
   GetSystemDefaultLangID=KERNEL32.GetSystemDefaultLangID
-  GetVersionExA=KERNEL32.GetVersionExA
   GetWindowsDirectoryA=KERNEL32.GetWindowsDirectoryA
   GetWindowsDirectoryW=KERNEL32.GetWindowsDirectoryW
-  GetModuleHandleW=KERNEL32.GetModuleHandleW
   FreeEnvironmentStringsA=KERNEL32.FreeEnvironmentStringsA
   GetEnvironmentStrings=KERNEL32.GetEnvironmentStrings
   GetEnvironmentStringsW=KERNEL32.GetEnvironmentStringsW
@@ -223,6 +238,10 @@ EXPORTS
   SetFileTime=KERNEL32.SetFileTime
   LocalFileTimeToFileTime=KERNEL32.LocalFileTimeToFileTime
   SystemTimeToFileTime=KERNEL32.SystemTimeToFileTime
+  FindResourceExA=KERNEL32.FindResourceExA
+  FindResourceExW=KERNEL32.FindResourceExW
+  GetSystemTime=KERNEL32.GetSystemTime
+  lstrcpyA=KERNEL32.lstrcpyA
 
   GetKernelObjectSecurity=ADVAPI32.GetKernelObjectSecurity
   GetSecurityDescriptorOwner=ADVAPI32.GetSecurityDescriptorOwner
@@ -316,7 +335,9 @@ EXPORTS
   GetStringTypeExW=KERNEL32.GetStringTypeExW
   GetStringTypeExA=KERNEL32.GetStringTypeExA
   IsBadReadPtr=KERNEL32.IsBadReadPtr
+  IsBadWritePtr=KERNEL32.IsBadWritePtr
   IsBadStringPtrA=KERNEL32.IsBadStringPtrA
+  IsBadCodePtr=KERNEL32.IsBadCodePtr
   GetThreadLocale=KERNEL32.GetThreadLocale
   QueryPerformanceFrequency=KERNEL32.QueryPerformanceFrequency
   SetThreadPriority=KERNEL32.SetThreadPriority
@@ -335,7 +356,6 @@ EXPORTS
   GetQueuedCompletionStatus=KERNEL32.GetQueuedCompletionStatus
   CompareFileTime=KERNEL32.CompareFileTime
   GetFileTime=KERNEL32.GetFileTime
-  GetVersion=KERNEL32.GetVersion
   GetSystemDirectoryA=KERNEL32.GetSystemDirectoryA
   FindResourceA=KERNEL32.FindResourceA
   FindResourceW=KERNEL32.FindResourceW
@@ -385,5 +405,31 @@ EXPORTS
   ExpandEnvironmentStringsW=KERNEL32.ExpandEnvironmentStringsW
   lstrcmpiA=KERNEL32.lstrcmpiA
   GetConsoleScreenBufferInfo=KERNEL32.GetConsoleScreenBufferInfo
+  GlobalSize=KERNEL32.GlobalSize
+  lstrcpynA=KERNEL32.lstrcpynA
+  lstrcatA=KERNEL32.lstrcatA
 
- 
+  ; For Connectix Virtual PC 4.1 
+  ClearCommError=KERNEL32.ClearCommError
+  EscapeCommFunction=KERNEL32.EscapeCommFunction
+  GetCommState=KERNEL32.GetCommState
+  GetComputerNameA=KERNEL32.GetComputerNameA
+  GetDiskFreeSpaceExA=KERNEL32.GetDiskFreeSpaceExA
+  GetLogicalDriveStringsA=KERNEL32.GetLogicalDriveStringsA
+  GetOverlappedResult=KERNEL32.GetOverlappedResult
+  GetProcessVersion=KERNEL32.GetProcessVersion
+  GetProfileIntA=KERNEL32.GetProfileIntA
+  GlobalAddAtomA=KERNEL32.GlobalAddAtomA
+  GlobalDeleteAtom=KERNEL32.GlobalDeleteAtom
+  GlobalFlags=KERNEL32.GlobalFlags
+  GlobalGetAtomNameA=KERNEL32.GlobalGetAtomNameA
+  LocalReAlloc=KERNEL32.LocalReAlloc
+  lstrcmpA=KERNEL32.lstrcmpA
+  PurgeComm=KERNEL32.PurgeComm
+  QueryDosDeviceA=KERNEL32.QueryDosDeviceA
+  SetCommMask=KERNEL32.SetCommMask
+  SetCommState=KERNEL32.SetCommState
+  SetCommTimeouts=KERNEL32.SetCommTimeouts
+  WaitCommEvent=KERNEL32.WaitCommEvent
+  FileTimeToDosDateTime=KERNEL32.FileTimeToDosDateTime
+  GetCommModemStatus=KERNEL32.GetCommModemStatus

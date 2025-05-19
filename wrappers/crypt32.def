@@ -1,0 +1,10 @@
+LIBRARY
+EXPORTS
+  CertFreeCertificateContext=CRYPT32_CertFreeCertificateContext
+  CertVerifySubjectCertificateContext=CRYPT32_CertVerifySubjectCertificateContext
+  CertFindCertificateInStore=CRYPT32_CertFindCertificateInStore
+  CertCreateCertificateContext=CRYPT32_CertCreateCertificateContext
+  CertCloseStore=CRYPT32_CertCloseStore
+
+  CryptGetMessageCertificates=CRYPT32_CryptGetMessageCertificates
+  CryptVerifyMessageSignature=CRYPT32_CryptVerifyMessageSignature

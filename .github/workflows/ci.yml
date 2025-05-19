@@ -17,8 +17,8 @@ jobs:
 
     - uses: actions/checkout@v3
       with:
-        repository: 'itsmattkc/msvc420'
-        path: msvc420
+        repository: 'itsmattkc/msvc600'
+        path: msvc600
 
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v1.13
@@ -29,35 +29,47 @@ jobs:
     - name: Build wrappers
       shell: cmd
       run: |
-        call .\msvc420\bin\VCVARS32.BAT x86
+        call .\msvc600\VC98\bin\VCVARS32.BAT x86
         cd wrappers
         mkdir build
         cd build
         cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
         cmake --build .
     
-    - name: Generate patched MSIL
+    - name: Build winsock351
       shell: cmd
       run: |
-        msil\patch.bat
+        call .\msvc600\VC98\bin\VCVARS32.BAT x86
+        cd winsock351
+        nmake
+        move .\Debug\ws2_32.dll ..\build
 
-    - name: Build installer
+    - name: Copy binaries
       shell: cmd
       run: |
-        setup\nsis\makensis.exe setup\dotnet9x.nsi
+        copy bin\wininet\wininet.dll build
+        copy bin\msvcrt\msvcrt.dll build
 
-    - name: Upload Artifact
+    - name: Write README
+      shell: cmd
+      run: |
+        set readme=build\_README.MD
+        echo If you have Winsock 2 installed or you are on Windows NT 4, please delete ws2_32.dll! > %readme%
+        echo If you have the 32-bit version of Internet Explorer 3 (included in Windows 95 OSR2) or newer installed, delete wininet.dll and urlmon.dll >> %readme%
+        echo If you have the 32-bit version of Internet Explorer 5 (included Windows 98 SE and 2000) or newer installed, delete crypt32.dll >> %readme%
+        echo. >> %readme%
+        echo Have fun! >> %readme%
+        echo    - Heathercat123 >> %readme%
+        
+    - name: Patch Adobe Flash
+      shell: cmd
+      run: |
+        copy bin\flash\flashplayer9r289_win_sa_debug.exe patches\original.exe
+        patches\bspatch patches\original.exe patches\flash9r289.bdf build\Flash.exe
+
+    - name: Upload Artifacts
       uses: actions/upload-artifact@master
       with:
-        name: setup
+        name: flash95
         path: |
-          setup/dotnet9x.exe
-
-    - name: Upload Continuous Release
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'itsmattkc/dotnet9x' }}
-      shell: bash
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        curl -fLOSs --retry 2 --retry-delay 60 https://github.com/probonopd/uploadtool/raw/master/upload.sh
-        bash upload.sh setup/dotnet9x.exe
+          build/
