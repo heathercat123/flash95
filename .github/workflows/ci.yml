@@ -40,15 +40,15 @@ jobs:
         move corusr.dll ..\..\build
         move crypt32.dll ..\..\build
         move corshel.dll ..\..\build
-        move cornt.dll ..\..\build
+        move cornt2.dll ..\..\build
 
     - name: Build winsock351
       shell: cmd
       run: |
         call .\msvc600\VC98\bin\VCVARS32.BAT x86
         cd winsock351
-        nmake
-        move .\Debug\ws2_32.dll ..\build
+        nmake /f winsock351.mak CFG="winsock351 - Win32 Release"
+        move .\Release\ws2_32.dll ..\build
 
     - name: Copy binaries
       shell: cmd
