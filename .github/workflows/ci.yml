@@ -76,7 +76,7 @@ jobs:
       shell: cmd
       run: |
         copy bin\flash\flashplayer9r289_win_sa_debug.exe patches\original.exe
-        patches\bspatch patches\original.exe patches\flash9r289.bdf build\Flash.exe
+        patches\bspatch.exe patches\original.exe patches\flash9r289.bdf build\Flash.exe
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@master
