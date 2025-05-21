@@ -75,8 +75,7 @@ jobs:
     - name: Patch Adobe Flash
       shell: cmd
       run: |
-        copy bin\flash\flashplayer9r289_win_sa_debug.exe patches\original.exe
-        patches\bspatch.exe patches\original.exe patches\flash9r289.bdf build\Flash.exe
+        copy patches\flash9r289.exe build\ 
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@master
