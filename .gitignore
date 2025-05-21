@@ -8,3 +8,4 @@ build.img
 build.iso
 patches/original.exe
 *~
+*.swp

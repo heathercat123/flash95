@@ -20,6 +20,11 @@ jobs:
         repository: 'itsmattkc/msvc600'
         path: msvc600
 
+    - uses: actions/checkout@v3
+      with:
+        repository: 'heathercat123/winsock351'
+        path: winsock351
+
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v1.13
       with:
