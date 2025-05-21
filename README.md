@@ -1,7 +1,7 @@
 # Adobe Flash 9-10 for Windows 9x
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/heathercat123/flash9x/master/img/screenshot.png" />
+  <img src="https://raw.githubusercontent.com/heathercat123/flash95/master/img/screenshot.png" />
 </p>
 
 ## Introduction
