@@ -35,7 +35,13 @@ jobs:
         cd build
         cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
         cmake --build .
-    
+        mkdir ..\..\build
+        move corkel32.dll ..\..\build
+        move corusr.dll ..\..\build
+        move crypt32.dll ..\..\build
+        move corshel.dll ..\..\build
+        move cornt.dll ..\..\build
+
     - name: Build winsock351
       shell: cmd
       run: |
