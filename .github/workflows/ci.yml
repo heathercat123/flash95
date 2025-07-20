@@ -10,7 +10,7 @@ on:
 
 jobs:
   mirror:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     # "Thank you a so much for a [letting me mirror my forks to Coderberg]!" - Legit Mario
     steps:
       - uses: actions/checkout@v3
