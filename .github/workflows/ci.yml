@@ -9,6 +9,17 @@ on:
       - '**.md'
 
 jobs:
+  mirror:
+    # "Thank you a so much for a [letting me mirror my forks to Coderberg]!" - Legit Mario
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: yesolutions/mirror-action@master
+      with:
+        REMOTE: 'https://codeberg.org/heathercat123/flash95.git'
+        GIT_USERNAME: heathercat123
+        GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+
   build:
     runs-on: windows-latest
 
