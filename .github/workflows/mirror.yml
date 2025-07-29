@@ -1,0 +1,15 @@
+name: Build
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    # "Thank you a so much for a letting a me mirror a my forks to a Codeberg!" - 100% Legit Mario
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: yesolutions/mirror-action@master
+        with:
+          REMOTE: 'https://codeberg.org/heathercat123/flash95.git'
+          GIT_USERNAME: heathercat123
+          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
